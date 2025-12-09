@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>English Number Trainer – Listening MC</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #e5e7eb;
+      color: #111827;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .app {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      padding: 2rem 2.5rem;
+      max-width: 700px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    h1 {
+      margin-top: 0;
+      text-align: center;
+      font-size: 1.6rem;
+      margin-bottom: 0.25rem;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 1.5rem;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.4rem;
+    }
+    .status-box {
+      flex: 1 1 200px;
+      background: #f3f4f6;
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      font-size: 0.9rem;
+    }
+    .status-box strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+    .status-main {
+      font-size: 1.3rem;
+      margin-bottom: 0.2rem;
+    }
+    .status-sub {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      align-items: flex-end;
+      flex: 0 0 auto;
+    }
+
+    .speed-row {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 0.5rem 1.1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      background: #2563eb;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.15s ease, opacity 0.1s ease;
+      box-shadow: 0 3px 8px rgba(37,99,235,0.35);
+      white-space: nowrap;
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 12px rgba(37,99,235,0.45);
+      background: #1d4ed8;
+    }
+    button:disabled {
+      background: #9ca3af;
+      box-shadow: none;
+      cursor: default;
+      transform: none;
+      opacity: 0.8;
+    }
+    button.secondary {
+      background: #10b981;
+      box-shadow: 0 3px 8px rgba(16,185,129,0.35);
+    }
+    button.secondary:hover:not(:disabled) {
+      background: #059669;
+      box-shadow: 0 5px 12px rgba(16,185,129,0.45);
+    }
+    button.outline {
+      background: #ffffff;
+      color: #111827;
+      border: 1px solid #e5e7eb;
+      box-shadow: none;
+    }
+    button.outline:hover:not(:disabled) {
+      background: #f9fafb;
+    }
+    button.small {
+      padding: 0.35rem 0.8rem;
+      font-size: 0.8rem;
+    }
+    .speed-btn.active {
+      background: #4b5563;
+      box-shadow: 0 3px 8px rgba(75,85,99,0.4);
+    }
+
+    .options-wrapper {
+      margin-top: 0.5rem;
+    }
+    .options-title {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+    .options-hint {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 0.7rem;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.6rem;
+    }
+
+    .option-btn {
+      width: 100%;
+      justify-content: center;
+      padding: 0.7rem 0.5rem;
+      font-size: 1.05rem;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #111827;
+      border: 1px solid transparent;
+      box-shadow: none;
+    }
+    .option-btn:hover:not(:disabled) {
+      background: #e5e7eb;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    }
+    .option-btn.correct {
+      background: #16a34a;
+      color: #ffffff;
+      border-color: #15803d;
+      box-shadow: 0 3px 10px rgba(22,163,74,0.5);
+    }
+    .option-btn.wrong {
+      background: #b91c1c;
+      color: #ffffff;
+      border-color: #7f1d1d;
+    }
+
+    .message {
+      margin-top: 1rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .message.info {
+      background: #eff6ff;
+      color: #1e40af;
+    }
+    .message.success {
+      background: #ecfdf5;
+      color: #166534;
+    }
+    .message.error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .footer-info {
+      margin-top: 1.2rem;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      text-align: right;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      background: #e5e7eb;
+      font-size: 0.75rem;
+      margin-left: 0.3rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>English Number Trainer</h1>
+    <div class="subtitle">
+      Hör gut zu, klicke die richtige Zahl – pass auf die Spiegelzahl und ähnliche Zahlen auf!
+    </div>
+
+    <div class="top-row">
+      <div class="status-box">
+        <strong>Training</strong>
+        <div class="status-main">
+          Runden: <span id="roundCount">0</span> · Treffer: <span id="correctCount">0</span>
+        </div>
+        <div class="status-sub">
+          Modus: <span id="speedLabel">Langsam (10&nbsp;s)</span> · Auto: <span id="autoLabel">aus</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="speed-row">
+          <button id="slowBtn" class="small speed-btn active">🐢 Langsam (10 s)</button>
+          <button id="fastBtn" class="small speed-btn">⚡ Schnell (5 s)</button>
+        </div>
+        <div class="speed-row">
+          <button id="playPauseBtn" class="secondary">▶ Autoplay</button>
+          <button id="nextBtn" class="outline">⏭ Nächste Zahl</button>
+        </div>
+        <div class="speed-row">
+          <button id="repeatBtn" class="small outline">🔁 Nochmals hören</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="options-wrapper">
+      <div class="options-title">
+        Wähle die Zahl, die du gehört hast <span class="badge">Zahlen 1–100</span>
+      </div>
+      <div class="options-hint">
+        Eine falsche Antwort ist (wenn möglich) die <strong>Spiegelzahl</strong> (z.B. 64 → 46), andere sind
+        <strong>ähnlich klingende Zahlen</strong> (z.B. 7, 17, 70, 71).
+      </div>
+      <div id="optionsGrid" class="options-grid"></div>
+    </div>
+
+    <div id="message" class="message info"></div>
+
+    <div class="footer-info">
+      Sprachausgabe: Browser-Web&nbsp;Speech&nbsp;API · Sprache: Englisch · Nach 30 Treffern meldet sich die Aufgabe bei LearningView als erledigt
+    </div>
+  </div>
+
+  <script>
+    // --- Grundeinstellungen ---
+    const MIN_NUMBER = 1;
+    const MAX_NUMBER = 100;
+    const NUM_OPTIONS = 6; // 1 richtig + 5 falsch
+    const LV_FINISH_THRESHOLD = 30; // nach 30 richtigen Antworten "AppSolved" senden
+
+    let currentNumber = null;
+    let lastUtteranceNumber = null;
+    let roundCount = 0;
+    let correctCount = 0;
+    let autoplay = false;
+    let intervalMs = 10000; // Standard: 10 s (langsam)
+    let intervalId = null;
+
+    let numbersOrder = [];
+    let orderIndex = 0;
+
+    let lvFinishedSent = false;
+
+    const optionsGrid = document.getElementById('optionsGrid');
+    const roundCountEl = document.getElementById('roundCount');
+    const correctCountEl = document.getElementById('correctCount');
+    const speedLabelEl = document.getElementById('speedLabel');
+    const autoLabelEl = document.getElementById('autoLabel');
+    const messageEl = document.getElementById('message');
+
+    const slowBtn = document.getElementById('slowBtn');
+    const fastBtn = document.getElementById('fastBtn');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const repeatBtn = document.getElementById('repeatBtn');
+
+    const speechSupported = 'speechSynthesis' in window;
+    let warnedNoSpeech = false;
+
+    // Gruppen ähnlich klingender Zahlen (nur Beispiele, beliebig erweiterbar)
+    const similarGroups = [
+      [1, 10, 11],
+      [2, 12, 20, 22],
+      [3, 13, 30, 33],
+      [4, 14, 40, 44],
+      [5, 15, 50, 55],
+      [6, 16, 60, 66],
+      [7, 17, 70, 71],
+      [8, 18, 80, 81],
+      [9, 19, 90, 91]
+    ];
+
+    function findSimilarGroup(num) {
+      for (const group of similarGroups) {
+        if (group.includes(num)) return group;
+      }
+      return null;
+    }
+
+    // --- Hilfsfunktionen ---
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function initNumberOrder() {
+      numbersOrder = [];
+      for (let i = MIN_NUMBER; i <= MAX_NUMBER; i++) {
+        numbersOrder.push(i);
+      }
+      shuffleArray(numbersOrder);
+      orderIndex = 0;
+    }
+
+    function getNextNumber() {
+      // Vermeidet Wiederholungen, bis alle einmal dran waren
+      if (orderIndex >= numbersOrder.length) {
+        initNumberOrder();
+      }
+      const num = numbersOrder[orderIndex];
+      orderIndex++;
+      return num;
+    }
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function getMirrorNumber(n) {
+      if (n < 10 || n > 99) return null; // Spiegelzahl sinnvoll für zweistellige Zahlen
+      const tens = Math.floor(n / 10);
+      const ones = n % 10;
+      const mirrored = ones * 10 + tens;
+      if (mirrored < MIN_NUMBER || mirrored > MAX_NUMBER) return null;
+      if (mirrored === n) return null;
+      return mirrored;
+    }
+
+    function generateOptions(correct) {
+      const optionsSet = new Set();
+      optionsSet.add(correct);
+
+      // Spiegelzahl (wenn möglich)
+      const mirror = getMirrorNumber(correct);
+      if (mirror !== null) {
+        optionsSet.add(mirror);
+      }
+
+      // Ähnlich klingende Zahlen aus gleicher Gruppe
+      const group = findSimilarGroup(correct);
+      if (group) {
+        for (const g of group) {
+          if (optionsSet.size >= NUM_OPTIONS) break;
+          if (g !== correct && g >= MIN_NUMBER && g <= MAX_NUMBER) {
+            optionsSet.add(g);
+          }
+        }
+      }
+
+      // weitere zufällige falsche Zahlen dazugeben
+      while (optionsSet.size < NUM_OPTIONS) {
+        const candidate = getRandomInt(MIN_NUMBER, MAX_NUMBER);
+        if (!optionsSet.has(candidate)) {
+          optionsSet.add(candidate);
+        }
+      }
+
+      const optionsArray = Array.from(optionsSet);
+      shuffleArray(optionsArray);
+      return optionsArray;
+    }
+
+    function speakNumber(num) {
+      if (!speechSupported) {
+        if (!warnedNoSpeech) {
+          showMessage('Dein Browser unterstützt keine Sprachausgabe (Web Speech API). Die Zahlen werden nicht vorgelesen.', 'error');
+          warnedNoSpeech = true;
+        }
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(num.toString());
+      utterance.lang = 'en-GB';
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+      lastUtteranceNumber = num;
+    }
+
+    function speakFeedback(text) {
+      if (!speechSupported) return;
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-US';
+      window.speechSynthesis.speak(utter);
+    }
+
+    function showMessage(text, type = 'info') {
+      messageEl.textContent = text;
+      messageEl.classList.remove('info', 'success', 'error');
+      messageEl.classList.add(type);
+      messageEl.style.display = 'block';
+    }
+
+    function hideMessage() {
+      messageEl.style.display = 'none';
+    }
+
+    // --- LearningView: Aufgabe als erledigt melden ---
+    function sendFinishedToLearningView() {
+      if (lvFinishedSent) return;
+      lvFinishedSent = true;
+
+      try {
+        if (window.parent && window.parent !== window) {
+          // Trick aus LearningView-Forum: Interaktiv (extern) mit Anbieter "LearningApps"
+          // und dann 'AppSolved' an den Parent senden.
+          window.parent.postMessage('AppSolved', '*');
+        }
+        showMessage('🎉 Super! Du hast 30 richtige Antworten geschafft. Die Aufgabe wird in LearningView als erledigt markiert.', 'success');
+      } catch (e) {
+        console.error('Fehler beim Senden an LearningView:', e);
+      }
+    }
+
+    // --- Runden-Logik ---
+
+    function startNewRound() {
+      hideMessage();
+      if (speechSupported) {
+        window.speechSynthesis.cancel();
+      }
+
+      currentNumber = getNextNumber();
+      roundCount++;
+      roundCountEl.textContent = roundCount.toString();
+
+      const options = generateOptions(currentNumber);
+      renderOptions(options);
+      speakNumber(currentNumber);
+    }
+
+    function renderOptions(options) {
+      optionsGrid.innerHTML = '';
+      options.forEach(num => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = num.toString();
+        btn.dataset.value = num.toString();
+        btn.addEventListener('click', () => handleOptionClick(btn));
+        optionsGrid.appendChild(btn);
+      });
+    }
+
+    function disableAllOptions() {
+      const buttons = optionsGrid.querySelectorAll('.option-btn');
+      buttons.forEach(b => b.disabled = true);
+    }
+
+    function handleOptionClick(btn) {
+      const chosen = parseInt(btn.dataset.value, 10);
+      const isCorrect = chosen === currentNumber;
+
+      disableAllOptions();
+
+      if (isCorrect) {
+        btn.classList.add('correct');
+        correctCount++;
+        correctCountEl.textContent = correctCount.toString();
+        showMessage('Yeah! Das war die richtige Zahl. 🎉', 'success');
+        speakFeedback('Yeah!');
+
+        // LearningView: ab 30 Treffern erledigt melden
+        if (correctCount >= LV_FINISH_THRESHOLD) {
+          sendFinishedToLearningView();
+        }
+      } else {
+        btn.classList.add('wrong');
+        showMessage(`Ouch! Das war nicht richtig. Die gesuchte Zahl war ${currentNumber}.`, 'error');
+        speakFeedback('Ouch!');
+        const buttons = optionsGrid.querySelectorAll('.option-btn');
+        buttons.forEach(b => {
+          if (parseInt(b.dataset.value, 10) === currentNumber) {
+            b.classList.add('correct');
+          }
+        });
+      }
+    }
+
+    // --- Autoplay / Geschwindigkeit ---
+
+    function updateSpeedLabel() {
+      if (intervalMs === 5000) {
+        speedLabelEl.innerHTML = 'Schnell (5&nbsp;s)';
+      } else {
+        speedLabelEl.innerHTML = 'Langsam (10&nbsp;s)';
+      }
+    }
+
+    function setSpeed(ms) {
+      intervalMs = ms;
+      slowBtn.classList.toggle('active', ms === 10000);
+      fastBtn.classList.toggle('active', ms === 5000);
+      updateSpeedLabel();
+
+      if (autoplay) {
+        stopAutoplay();
+        startAutoplay();
+      }
+    }
+
+    function startAutoplay() {
+      if (intervalId !== null) clearInterval(intervalId);
+      autoplay = true;
+      autoLabelEl.textContent = 'an';
+      playPauseBtn.textContent = '⏸ Autoplay';
+      intervalId = setInterval(() => {
+        startNewRound();
+      }, intervalMs);
+    }
+
+    function stopAutoplay() {
+      autoplay = false;
+      autoLabelEl.textContent = 'aus';
+      playPauseBtn.textContent = '▶ Autoplay';
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    }
+
+    // --- Event-Handler ---
+
+    slowBtn.addEventListener('click', () => setSpeed(10000));
+    fastBtn.addEventListener('click', () => setSpeed(5000));
+
+    playPauseBtn.addEventListener('click', () => {
+      if (autoplay) {
+        stopAutoplay();
+      } else {
+        startAutoplay();
+        startNewRound();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (autoplay) {
+        stopAutoplay();
+      }
+      startNewRound();
+    });
+
+    repeatBtn.addEventListener('click', () => {
+      if (lastUtteranceNumber != null) {
+        speakNumber(lastUtteranceNumber);
+      } else if (currentNumber != null) {
+        speakNumber(currentNumber);
+      } else {
+        showMessage('Es wurde noch keine Zahl vorgelesen.', 'info');
+      }
+    });
+
+    // --- Startzustand ---
+
+    function init() {
+      initNumberOrder();
+      roundCount = 0;
+      correctCount = 0;
+      lvFinishedSent = false;
+      roundCountEl.textContent = '0';
+      correctCountEl.textContent = '0';
+      updateSpeedLabel();
+      showMessage('Klicke auf „Nächste Zahl“ oder starte Autoplay, um zu beginnen.', 'info');
+    }
+
+    init();
+  </script>
+</body>
+</html>
