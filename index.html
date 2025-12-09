@@ -494,7 +494,7 @@
         correctCount++;
         correctCountEl.textContent = correctCount.toString();
         showMessage('Yeah! Das war die richtige Zahl. 🎉', 'success');
-        speakFeedback('Yeah!');
+        speakFeedback('Correct!');
 
         // LearningView: ab 30 Treffern erledigt melden
         if (correctCount >= LV_FINISH_THRESHOLD) {
@@ -502,8 +502,8 @@
         }
       } else {
         btn.classList.add('wrong');
-        showMessage(`Ouch! Das war nicht richtig. Die gesuchte Zahl war ${currentNumber}.`, 'error');
-        speakFeedback('Ouch!');
+        showMessage(`Oh nein! Das war nicht richtig. Die gesuchte Zahl war ${currentNumber}.`, 'error');
+        speakFeedback('Oh no, that was wrong!');
         const buttons = optionsGrid.querySelectorAll('.option-btn');
         buttons.forEach(b => {
           if (parseInt(b.dataset.value, 10) === currentNumber) {
